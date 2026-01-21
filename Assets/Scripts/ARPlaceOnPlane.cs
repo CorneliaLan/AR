@@ -26,7 +26,6 @@ public class ARPlaceOnPlane : MonoBehaviour
         Pose p = hits[0].pose;
         placedBoard = Instantiate(boardPrefab, p.position, p.rotation);
 
-        // Optional: Board immer zur Kamera drehen (nur Y)
         Vector3 cam = Camera.main.transform.position;
         Vector3 dir = cam - placedBoard.transform.position;
         dir.y = 0f;

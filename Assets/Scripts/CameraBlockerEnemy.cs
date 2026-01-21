@@ -35,7 +35,6 @@ public class CameraBlockerEnemy : MonoBehaviour
 
         gameManager = FindObjectOfType<GameManager>();
 
-        // start visible size
         transform.localScale = Vector3.one * startScale;
 
         if (gameManager != null)
@@ -63,7 +62,6 @@ public class CameraBlockerEnemy : MonoBehaviour
         dir.Normalize();
         transform.position += dir * approachSpeed * Time.deltaTime;
 
-        // face camera (so it "fills" view more consistently)
         transform.rotation = Quaternion.LookRotation(transform.position - camPos, Vector3.up);
     }
 

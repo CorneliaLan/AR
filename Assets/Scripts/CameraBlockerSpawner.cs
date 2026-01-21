@@ -10,7 +10,7 @@ public class CameraBlockerSpawner : MonoBehaviour
     public float spawnEverySeconds = 10f;
 
     [Header("Blocker Size")]
-    public float blockerScale = 1.5f;   // GROSS, blockiert Sicht sicher
+    public float blockerScale = 1.5f;
     public float freezeSeconds = 2f;
 
     float nextSpawnTime;
@@ -35,7 +35,6 @@ public class CameraBlockerSpawner : MonoBehaviour
 
     void SpawnBlockerAtWorldZero()
     {
-        // Freeze normal enemies
         gameManager.FreezeForSeconds(freezeSeconds);
 
         Vector3 spawnPos = Vector3.zero;
@@ -44,10 +43,8 @@ public class CameraBlockerSpawner : MonoBehaviour
 
         GameObject go = Instantiate(blockerPrefab, spawnPos, Quaternion.identity);
 
-        // Make it BIG so it blocks the camera
         go.transform.localScale = Vector3.one * blockerScale;
 
-        // Optional: always face camera if one exists
         Camera cam = Camera.main;
         if (cam != null)
         {
@@ -56,7 +53,6 @@ public class CameraBlockerSpawner : MonoBehaviour
                 go.transform.rotation = Quaternion.LookRotation(-dir.normalized, Vector3.up);
         }
 
-        // Safety check
         if (go.GetComponent<CameraBlockerEnemy>() == null)
         {
             Debug.LogError("Blocker prefab has NO CameraBlockerEnemy component!", go);

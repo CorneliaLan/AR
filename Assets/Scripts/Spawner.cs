@@ -9,13 +9,12 @@ public class Spawner : MonoBehaviour
     [Header("Difficulty")]
     public float spawnInterval = 1.2f;
     public float intervalMin = 0.35f;
-    public float intervalDecay = 0.02f; // pro Kill
+    public float intervalDecay = 0.02f; 
     public int maxAlive = 10;
 
     List<Transform> spawnPoints = new();
     Transform baseTarget;
 
-    // NEW: Board bounds cache (AR-relevant)
     Bounds boardBounds;
     bool hasBoardBounds;
 
@@ -28,7 +27,6 @@ public class Spawner : MonoBehaviour
     {
         spawnPoints.Clear();
 
-        // Erwartet: Board hat Child "SpawnPoints" mit 4 empties
         var sp = board.transform.Find("SpawnPoints");
         if (sp != null)
         {
@@ -39,7 +37,6 @@ public class Spawner : MonoBehaviour
         var baseObj = board.transform.Find("Base");
         baseTarget = baseObj != null ? baseObj : board.transform;
 
-        // NEW: cache board bounds from any renderer on the placed AR board
         var rend = board.GetComponentInChildren<Renderer>();
         if (rend != null)
         {
@@ -72,7 +69,6 @@ public class Spawner : MonoBehaviour
         if (gameManager.state != GameManager.State.Playing) return;
         if (spawnPoints.Count == 0 || baseTarget == null) return;
 
-        // Optional (falls du Freeze nutzen willst): Spawner stoppt während Grace Time
         if (gameManager.isFrozen) return;
 
         if (Time.time >= nextSpawnTime && aliveCount < maxAlive)
@@ -87,15 +83,12 @@ public class Spawner : MonoBehaviour
         Transform sp = spawnPoints[Random.Range(0, spawnPoints.Count)];
         Enemy e = Instantiate(enemyPrefab, sp.position, Quaternion.identity);
 
-        // base logic
         e.Init(this, gameManager, baseTarget);
 
-        // --- Random Path enforcement + debug ---
         var follower = e.GetComponent<EnemyPathFollower>();
         if (follower == null)
         {
             Debug.LogWarning("Enemy has NO EnemyPathFollower component. Add it to the Enemy prefab!", e.gameObject);
-            // Optional: enforce it automatically:
             follower = e.gameObject.AddComponent<EnemyPathFollower>();
         }
 
@@ -106,7 +99,6 @@ public class Spawner : MonoBehaviour
         else
         {
             follower.Init(gameManager, boardBounds, baseTarget);
-            // Optional: see path lines in Scene view
             follower.drawDebugPath = true;
         }
 
@@ -118,7 +110,6 @@ public class Spawner : MonoBehaviour
     {
         aliveCount = Mathf.Max(0, aliveCount - 1);
 
-        // Difficulty scaling: schneller spawnen je mehr Kills
         spawnInterval = Mathf.Max(intervalMin, spawnInterval - intervalDecay);
     }
 

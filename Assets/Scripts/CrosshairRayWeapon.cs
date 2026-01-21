@@ -10,7 +10,7 @@ public class CrosshairRayWeapon : MonoBehaviour
     public float fireCooldown = 0.25f;
 
     [Header("Optional Feedback")]
-    public RectTransform crosshairUI; // dein UI Image (RectTransform)
+    public RectTransform crosshairUI; 
     public float hitScale = 1.25f;
 
     float nextFireTime;

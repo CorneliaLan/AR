@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-
 public class GameManager : MonoBehaviour
 {
     public enum State { Placing, Playing, GameOver }
@@ -28,7 +27,6 @@ public class GameManager : MonoBehaviour
     {
         boardInstance = board;
 
-        // Spawner konfigurieren
         spawner.ConfigureFromBoard(boardInstance);
 
         score = 0;
@@ -69,8 +67,6 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
-        // Einfacher Restart: Szene neu laden wäre auch ok,
-        // aber hier machen wir’s ohne SceneManagement:
         score = 0;
         lives = 3;
 
