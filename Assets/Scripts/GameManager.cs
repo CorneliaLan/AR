@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +12,9 @@ public class GameManager : MonoBehaviour
 
     public HUD hud;
     public Spawner spawner;
+
+    public bool isFrozen { get; private set; }
+    Coroutine freezeRoutine;
 
     GameObject boardInstance;
 
@@ -74,4 +79,19 @@ public class GameManager : MonoBehaviour
 
         SetState(State.Placing);
     }
+
+    public void FreezeForSeconds(float seconds)
+    {
+        if (freezeRoutine != null) StopCoroutine(freezeRoutine);
+        freezeRoutine = StartCoroutine(FreezeCoroutine(seconds));
+    }
+
+    IEnumerator FreezeCoroutine(float seconds)
+    {
+        isFrozen = true;
+        yield return new WaitForSeconds(seconds);
+        isFrozen = false;
+        freezeRoutine = null;
+    }
+
 }

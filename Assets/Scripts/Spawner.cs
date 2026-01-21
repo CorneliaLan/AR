@@ -15,6 +15,10 @@ public class Spawner : MonoBehaviour
     List<Transform> spawnPoints = new();
     Transform baseTarget;
 
+    // NEW: Board bounds cache (AR-relevant)
+    Bounds boardBounds;
+    bool hasBoardBounds;
+
     float nextSpawnTime;
     bool running;
 
@@ -34,6 +38,19 @@ public class Spawner : MonoBehaviour
 
         var baseObj = board.transform.Find("Base");
         baseTarget = baseObj != null ? baseObj : board.transform;
+
+        // NEW: cache board bounds from any renderer on the placed AR board
+        var rend = board.GetComponentInChildren<Renderer>();
+        if (rend != null)
+        {
+            boardBounds = rend.bounds;
+            hasBoardBounds = true;
+        }
+        else
+        {
+            hasBoardBounds = false;
+            Debug.LogWarning("Spawner: No Renderer found on board. Random paths will not be constrained.");
+        }
     }
 
     public void Begin()
@@ -55,6 +72,9 @@ public class Spawner : MonoBehaviour
         if (gameManager.state != GameManager.State.Playing) return;
         if (spawnPoints.Count == 0 || baseTarget == null) return;
 
+        // Optional (falls du Freeze nutzen willst): Spawner stoppt während Grace Time
+        if (gameManager.isFrozen) return;
+
         if (Time.time >= nextSpawnTime && aliveCount < maxAlive)
         {
             SpawnOne();
@@ -66,9 +86,33 @@ public class Spawner : MonoBehaviour
     {
         Transform sp = spawnPoints[Random.Range(0, spawnPoints.Count)];
         Enemy e = Instantiate(enemyPrefab, sp.position, Quaternion.identity);
+
+        // base logic
         e.Init(this, gameManager, baseTarget);
+
+        // --- Random Path enforcement + debug ---
+        var follower = e.GetComponent<EnemyPathFollower>();
+        if (follower == null)
+        {
+            Debug.LogWarning("Enemy has NO EnemyPathFollower component. Add it to the Enemy prefab!", e.gameObject);
+            // Optional: enforce it automatically:
+            follower = e.gameObject.AddComponent<EnemyPathFollower>();
+        }
+
+        if (!hasBoardBounds)
+        {
+            Debug.LogWarning("Spawner has NO board bounds (no Renderer on board). Random path cannot be built!", this);
+        }
+        else
+        {
+            follower.Init(gameManager, boardBounds, baseTarget);
+            // Optional: see path lines in Scene view
+            follower.drawDebugPath = true;
+        }
+
         aliveCount++;
     }
+
 
     public void OnEnemyKilled()
     {
