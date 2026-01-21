@@ -11,7 +11,7 @@ public class CameraBlockerSpawner : MonoBehaviour
 
     [Header("Blocker Size")]
     public float blockerScale = 1.5f;   // GROSS, blockiert Sicht sicher
-    public float freezeSeconds = 5f;
+    public float freezeSeconds = 2f;
 
     float nextSpawnTime;
 
